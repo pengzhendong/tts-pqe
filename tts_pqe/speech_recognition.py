@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import editdistance
+import edit_distance
 import librosa
 import sherpa_onnx
 from modelscope import snapshot_download
@@ -40,4 +40,26 @@ class SpeechRecognition:
     def wer(self, reference, defraded):
         text1 = self.compute(reference)
         text2 = self.compute(defraded)
-        return text1, text2, editdistance.eval(text1, text2)
+        sm = edit_distance.SequenceMatcher(text1, text2)
+        wer = sm.distance() / len(text1)
+        cor = sm.matches()
+
+        del_error = 0
+        ins_error = 0
+        sub_error = 0
+        for opcode in sm.get_opcodes():
+            if opcode[0] == "delete":
+                del_error += 1
+            elif opcode[0] == "insert":
+                ins_error += 1
+            elif opcode[0] == "replace":
+                sub_error += 1
+        return {
+            "ref": text1,
+            "hyp": text2,
+            "wer": wer,
+            "cor": cor,
+            "del": del_error,
+            "ins": ins_error,
+            "sub": sub_error
+        }

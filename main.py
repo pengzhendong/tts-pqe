@@ -25,12 +25,19 @@ from tts_pqe.speaker_identification import SpeakerIdentification
 def main(reference, defraded):
     moslqo = Visqol().measure(reference, defraded)
     similarity = SpeakerIdentification().similarity(reference, defraded)
-    text1, text2, editdistance = SpeechRecognition().wer(reference, defraded)
-    print("MOS:", moslqo)
-    print("Similarity:", similarity)
-    print("Edit distance", editdistance)
-    print(f"ASR result of {reference}:\n", text1)
-    print(f"ASR result of {defraded}:\n", text2)
+    result = SpeechRecognition().wer(reference, defraded)
+    print(f"MOS: {moslqo:.2f}")
+    print(f"Similarity: {similarity * 100:.2f}%")
+    print(f"{reference} ref: {result['ref']}")
+    print(f"{defraded} hyp: {result['hyp']}")
+    print(
+        f"WER: {result['wer'] * 100:.2f}%",
+        f"N={len(result['ref'])}",
+        f"C={result['cor']}",
+        f"S={result['sub']}",
+        f"D={result['del']}",
+        f"I={result['ins']}",
+    )
 
 
 if __name__ == "__main__":
