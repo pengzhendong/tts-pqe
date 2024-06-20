@@ -1,0 +1,6 @@
+click
+editdistance
+modelscope
+pyvisqol
+sherpa-onnx
+soundfile
